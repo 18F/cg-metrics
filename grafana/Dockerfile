@@ -8,10 +8,9 @@ RUN dpkg -i grafana_latest_amd64.deb
 
 EXPOSE 3000
 
-VOLUME ["/var/lib/grafana"]
-VOLUME ["/var/log/grafana"]
-VOLUME ["/etc/grafana"]
+VOLUME ["/var/lib/grafana", "/var/log/grafana", "/usr/share/grafana/data"]
+ADD grafana.ini /usr/share/grafana/grafana.ini
 
 WORKDIR /usr/share/grafana
 
-ENTRYPOINT ["/usr/sbin/grafana-server", "--config", "/etc/grafana/grafana.ini"]
+ENTRYPOINT ["/usr/sbin/grafana-server", "--config", "/usr/share/grafana/grafana.ini"]
