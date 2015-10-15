@@ -15,15 +15,11 @@ heka:
   - "8500:8500"
   - "4352:4352"
   - "5565:5565"
-  volumes:
-  - ./heka/hekad.toml:/etc/hekad/hekad.toml
   links:
   - influxdb
 grafana:
   build: ./grafana
   ports:
   - "3000:3000"
-  volumes:
-  - ./grafana/grafana.ini:/etc/grafana/grafana.ini:ro
   links: 
   - influxdb 
