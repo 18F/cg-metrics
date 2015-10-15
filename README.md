@@ -97,7 +97,7 @@ collector:
     deployment_name: cf-prod  #name of your cf environment
     graphite:
       address: <ip address of your docker host>
-      port: 8003
+      port: 2003
     use_graphite: true
 ```
 ## Usage
