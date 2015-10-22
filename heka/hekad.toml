@@ -69,7 +69,7 @@ log_sub_errors = true
 [cf-collector-regex]
 type = "PayloadRegexDecoder"
 #  nifty go regex tester https://regoio.herokuapp.com/
-# cf-np.DEA.0.10-1-2-3.available_memory_ratio 1.0 1428091803
+# cf-green.DEA.0.10-1-2-3.available_memory_ratio 1.0 1428091803
 # test with something like the following:  echo cf-sbx.etcd.0.10-32-120-134.healthy 1.0 $(date +%s) | nc localhost 2003
 #match_regex = '^(?P<Env>[^.]+)[.](?P<Job>[^.]+)[.](?P<Index>\d+)[.](?P<IP>[^.]+)[.](?P<Metric>\S+) (?P<Value>\S+) (?P<Timestamp>\d+)\s*$'
 match_regex = '^(?P<Env>[^.]+)[.](?P<Job>[^.]+)[.](?P<Index>\d+)[.](?P<IP>[^.]+)[.](?P<Payload>(?P<Metric>\S+) .*)\s*$'
@@ -137,10 +137,10 @@ preserve_data = false
 #preserve_data = false
 
 # Alert for dea memory.  Specific per cf enviornment so that alert throttles are enviornment specific
-# update the "cf-np" string to match the deployment name of your cloud foundry enviornment
+# update the "cf-green" string to match the deployment name of your cloud foundry enviornment
 [DEA_Avail_Mem_NP]
 type = "SandboxFilter"
-message_matcher = 'Type == "CFCollector" && Fields[Metric] == "available_memory_ratio" && Fields[Env] == "cf-np"'
+message_matcher = 'Type == "CFCollector" && Fields[Metric] == "available_memory_ratio" && Fields[Env] == "cf-green"'
 filename = "lua_filters/dea_alert_avail_mem_np.lua"
 can_exit = true
 preserve_data = false
@@ -150,7 +150,7 @@ ticker_interval = 120
 # update the "cf-prd" string to match the deployment name of your cloud foundry enviornment
 [DEA_Avail_Mem_Prd]
 type = "SandboxFilter"
-message_matcher = 'Type == "CFCollector" && Fields[Metric] == "available_memory_ratio" && Fields[Env] == "cf-prd"'
+message_matcher = 'Type == "CFCollector" && Fields[Metric] == "available_memory_ratio" && Fields[Env] == "cf-chili"'
 filename = "lua_filters/dea_alert_avail_mem_prd.lua"
 can_exit = true
 preserve_data = false
@@ -160,10 +160,10 @@ ticker_interval = 120
 # Put the following in a file and load/unload via the hekasbxmgr tool using the following commands:
 # heka-sbmgr -action=load -config=CloudOps.toml -script=/usr/share/heka/lua_filters/health_alert_np.lua -scriptconfig=np_health.toml 
 # heka-sbmgr -action=unload -config=CloudOps.toml -filtername=CFHealth_NP
-# update the "cf-np" string to match the deployment name of your cloud foundry enviornment
+# update the "cf-green" string to match the deployment name of your cloud foundry enviornment
 [CFHealth_NP]
 type = "SandboxFilter"
-message_matcher = 'Type == "CFCollector" && Fields[healthy] != 1.0 && Fields[Env] == "cf-np"'
+message_matcher = 'Type == "CFCollector" && Fields[healthy] != 1.0 && Fields[Env] == "cf-green"'
 filename = "lua_filters/health_alert_np.lua"
 can_exit = true
 preserve_data = false
@@ -175,7 +175,7 @@ preserve_data = false
 # update the "cf-prd" string to match the deployment name of your cloud foundry enviornment
 [CFHealth_Prd]
 type = "SandboxFilter"
-message_matcher = 'Type == "CFCollector" && Fields[healthy] != 1.0 && Fields[Env] == "cf-prd"'
+message_matcher = 'Type == "CFCollector" && Fields[healthy] != 1.0 && Fields[Env] == "cf-chili"'
 filename = "lua_filters/health_alert_prd.lua"
 can_exit = true
 preserve_data = false
@@ -184,7 +184,7 @@ preserve_data = false
 # update the "bosh-prd" string to match the deployment name of your cloud foundry enviornment
 [Bosh_Swap_Prd]
 type = "SandboxFilter"
-message_matcher = 'Type == "BoshHM" && Fields[system_swap_percent] >= 10.0 && Fields[Env] == "bosh-prd"'
+message_matcher = 'Type == "BoshHM" && Fields[system_swap_percent] >= 10.0 && Fields[Env] == "bosh-chili"'
 filename = "lua_filters/swap_alert_prd.lua"
 can_exit = true
 preserve_data = false
@@ -243,24 +243,24 @@ append_newlines = false
 
 ############### Outputs ######################
 # Log output useful for debugging
-#[LogOutput]
-#message_matcher = "TRUE"
+# [LogOutput]
+# message_matcher = "TRUE"
 #message_matcher = 'Logger == "SlackOutput" || Logger == "influxdb-output-cf-cnb" || Logger == "bosh-alert-filter" || Fields[payload_name] == "slack-message"' 
-#encoder = "RstEncoder"
+# encoder = "RstEncoder"
 
 # Sends slack messages from the the slack encoder to the specified slack channel
 # change the address to the webhook you've setup for your slack account
 [SlackOutput]
 type = "HttpOutput"
 message_matcher = "Fields[payload_type] == 'alert' || Fields[payload_name] == 'slack-message'"
-address = "https://hooks.slack.com/services/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"
+address = "https://hooks.slack.com/services/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"
 encoder = "SlackEncoder"
 
 # Takes bosh alerts and formats them into influxdb format
-# update the "cf_np" string to reflect the deployment name of your deployment.  Use _ rather than - to follow influx best practices.
+# update the "cf_green" string to reflect the deployment name of your deployment.  Use _ rather than - to follow influx best practices.
 [influxdb-output-bosh-alerts-np]
 type = "HttpOutput"
-message_matcher = "Fields[payload_name] == 'bosh-deploy-trigger' && Payload =~ /env=cf_np/"
+message_matcher = "Fields[payload_name] == 'bosh-deploy-trigger' && Payload =~ /env=cf_green/"
 address = "http://influxdb:8086/write?db=cf_np&rp=default&precision=s"
 username = "root"
 password = "root"
@@ -270,18 +270,18 @@ encoder = "PayloadEncoder"
 # update the "cf_prd" string to reflect the deployment name of your deployment.  Use _ rather than - to follow influx best practices.
 [influxdb-output-bosh-alerts-prd]
 type = "HttpOutput"
-message_matcher = "Fields[payload_name] == 'bosh-deploy-trigger' && Payload =~ /env=cf_prd/"
+message_matcher = "Fields[payload_name] == 'bosh-deploy-trigger' && Payload =~ /env=cf_chili/"
 address = "http://influxdb:8086/write?db=cf_prd&rp=default&precision=s"
 username = "root"
 password = "root"
 encoder = "PayloadEncoder"
 
 # Takes cf collector metrics and sends them to influxdb via the influxdb encoder
-# update the "cf_np" string to reflect the deployment name of your deployment.  Use _ rather than - to follow influx best practices.
-[influxdb-output-cf-np]
+# update the "cf_green" string to reflect the deployment name of your deployment.  Use _ rather than - to follow influx best practices.
+[influxdb-output-cf-green]
 type = "HttpOutput"
 # take out a bunch of metrics we don't care about...this took it from ~500 series to ~130
-message_matcher = "Type == 'CFCollector' &&  Fields[Env] == 'cf-np' && Fields[Metric] !~ /etcd.*|DopplerServer.*|LoggregatorTrafficcontroller.*|MetronAgent.*|.*timestamp.*/"
+message_matcher = "Type == 'CFCollector' &&  Fields[Env] == 'cf-green' && Fields[Metric] !~ /etcd.*|DopplerServer.*|LoggregatorTrafficcontroller.*|MetronAgent.*|.*timestamp.*/"
 address = "http://influxdb:8086/write?db=cf_np&rp=default&precision=s"
 username = "root"
 password = "root"
@@ -292,14 +292,14 @@ encoder = "influxdb-encoder-cf"
 [influxdb-output-cf-prd]
 type = "HttpOutput"
 # take out a bunch of metrics we don't care about...this took it from ~500 series to ~130
-message_matcher = "Type == 'CFCollector' &&  Fields[Env] == 'cf-prd' && Fields[Metric] !~ /etcd.*|DopplerServer.*|LoggregatorTrafficcontroller.*|MetronAgent.*|.*timestamp.*/"
+message_matcher = "Type == 'CFCollector' &&  Fields[Env] == 'cf-chili' && Fields[Metric] !~ /etcd.*|DopplerServer.*|LoggregatorTrafficcontroller.*|MetronAgent.*|.*timestamp.*/"
 address = "http://influxdb:8086/write?db=cf_prd&rp=default&precision=s"
 username = "root"
 password = "root"
 encoder = "influxdb-encoder-cf"
 
 # Takes bosh monitor metrics and sends them to influxdb via the influxdb encoder
-# update the "cf_np" string to reflect the deployment name of your deployment.  Use _ rather than - to follow influx best practices.
+# update the "cf_green" string to reflect the deployment name of your deployment.  Use _ rather than - to follow influx best practices.
 [influxdb-output-bosh-np]
 type = "HttpOutput"
 message_matcher =  "Type == 'BoshHM' && Fields[Env] == 'bosh-np'"
@@ -312,7 +312,7 @@ encoder = "influxdb-encoder-bosh"
 # update the "cf_prd" string to reflect the deployment name of your deployment.  Use _ rather than - to follow influx best practices.
 [influxdb-output-bosh-prd]
 type = "HttpOutput"
-message_matcher =  "Type == 'BoshHM' && Fields[Env] == 'bosh-prd'"
+message_matcher =  "Type == 'BoshHM' && Fields[Env] == 'bosh-chili'"
 address = "http://influxdb:8086/write?db=bosh_prd&rp=default&precision=s"
 username = "root"
 password = "root"
@@ -324,6 +324,6 @@ base_dir = "/var/cache/hekad"
 maxprocs = 8
 poolsize = 200
 max_process_inject = 1
-plugin_chansize = 50 
+plugin_chansize = 500 
 
 
