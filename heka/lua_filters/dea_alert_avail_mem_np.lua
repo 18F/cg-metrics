@@ -1,5 +1,6 @@
 require "string"
 require "math"
+require "globals"
 local alert = require "alert"
 local above_threshold = 0
 local total = 0 
@@ -24,7 +25,11 @@ end
 
 function timer_event(ns)
     if above_threshold < 1 and total > 1 then
-       local out_message = string.format("<!channel>\nNo DEA's in %s have more than 10%% memory\n <http://dockerserver.company.com:3000/dashboard/db/dea-stats-nonprod|Grafana NP DEA Stats>",env)
+       local url = string.format("%s", grafana_host)
+       if dashboard_ending[env] ~= nil then
+           url = string.format("%s/dashboard/db/dea-stats-%s",url, dashboard_ending[env])
+       end
+       local out_message = string.format("<!channel>\nNo DEA's in %s have more than 10%% memory\n <%s|Grafana NP DEA Stats>",env, url)
        alert.set_throttle(9e11)
        alert.send(ns, out_message)
     end  
