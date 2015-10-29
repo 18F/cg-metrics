@@ -198,6 +198,22 @@ filename = "lua_filters/swap_alert_np.lua"
 can_exit = true
 preserve_data = false
 
+[Router_Error_Rate_5xx]
+type = "SandboxFilter"
+message_matcher = 'Type == "CFCollector" && Fields[Metric] == "router.responses.5xx"'
+filename = "lua_filters/router_alert_error_rate_5xx.lua"
+can_exit = true
+preserve_data = false
+ticker_interval = 60
+
+[Router_Error_Rate_4xx]
+type = "SandboxFilter"
+message_matcher = 'Type == "CFCollector" && Fields[Metric] == "router.responses.4xx"'
+filename = "lua_filters/router_alert_error_rate_4xx.lua"
+can_exit = true
+preserve_data = false
+ticker_interval = 60
+
 ############### Encoders ######################
 # Encodes cf collector metrics to influx format
 [influxdb-encoder-cf]
