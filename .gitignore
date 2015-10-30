@@ -1,0 +1,5 @@
+heka/hekad.toml
+grafana/grafana.ini
+config.toml
+heka/lua_modules/globals.lua
+.*.swp

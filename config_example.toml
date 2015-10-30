@@ -1,0 +1,12 @@
+[Slack]
+username = "Heka Bot"
+channel = "#cloudfoundry-ops"
+address = "https://hooks.slack.com/services/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"
+
+[Env]
+np = "cf-np"
+prd = "cf-prd"
+
+[Host]
+grafana_address = "server.company.com"
+protocol = "http"

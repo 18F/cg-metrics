@@ -1,4 +1,4 @@
-#cf-metrics
+#cg-metrics
 A project for monitoring and alerting with cloudfoundry utilizing the [CF collector](https://github.com/cloudfoundry/collector), [Bosh Monitor](https://bosh.io/docs/monitoring.html), [heka](https://github.com/mozilla-services/heka), [influxdb](https://github.com/influxdb/influxdb), and [grafana](https://github.com/grafana/grafana)
 
 ## Why
@@ -30,6 +30,9 @@ To run the project, you will need the following:
 
 ### Docker Host and Container Configuration 
 First clone this repo to the docker host and change the following files to reflect your enviornment:
+
+### Common Configuration
+Run `pip install pytoml` then copy `config_example.toml` to `config.toml`. Fill in the variables for your setup then run `python inject_vars.py`
 
 #### Compose Configuration
 cf-metrics->docker-compose.yml: update this list to reflect the names of your cf enviornment(s) yml parameter for "deployment name"
