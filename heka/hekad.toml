@@ -14,23 +14,23 @@ max_filters = 100
 
 ############ Inputs ######################
 # listen on port 2003 for cf collector data coming from cloudfoundry in graphite format
-[tcp:2003]
+[tcp-2003]
 type = "TcpInput"
 splitter = "TokenSplitter"
 decoder = "cf-collector-graphite-decoder"
 address = ":2003"
 
 # listen on port 2004 for bosh monitor data coming from cloudfoundry in graphite format
-[tcp:2004]
+[tcp-2004]
 type = "TcpInput"
 splitter = "TokenSplitter"
 decoder = "bosh-hm-graphite-decoder"
 address = ":2004"
 
 # listen for heka control message for sandboxmanager
-[tcp:5565]
+[tcp-5565]
 type = "TcpInput"
-splitter = "acl_splitter" 
+splitter = "acl_splitter"
 decoder = "ProtobufDecoder"
 address = ":5565"
 
@@ -40,24 +40,24 @@ type = "HekaFramingSplitter"
         hmac_key = "key"
 
 # listen on port 8500 for bosh alert messages from bosh monitor consul plugin
-[bosh-consul]
-type = "HttpListenInput"
-address = ":8500"
-decoder = "bosh-alert-decoder"
+# [bosh-consul]
+# type = "HttpListenInput"
+# address = ":8500"
+# decoder = "bosh-alert-decoder"
 
 ########### Decoders ##################
 # decode incoming alerts from bosh monitor consul plugin
-[bosh-alert-decoder]
-type = "PayloadRegexDecoder"
-match_regex = '\{"\w*":"(?P<Kind>.+?)","\w*":"(?P<ID>.+?)","\w*":(?P<Severity>.+?),"\w*":"(?P<Title>.+?)","\w*":"(?P<Summary>.+\'?\'(?P<Env>\w*)\'.+\'?)","\w*":(?P<Source>.+?),"\w*":(?P<Timestamp>.+?)}'
-timestamp_layout = "Epoch"
+# [bosh-alert-decoder]
+# type = "PayloadRegexDecoder"
+# match_regex = '\{"\w*":"(?P<Kind>.+?)","\w*":"(?P<ID>.+?)","\w*":(?P<Severity>.+?),"\w*":"(?P<Title>.+?)","\w*":"(?P<Summary>.+\'?\'(?P<Env>\w*)\'.+\'?)","\w*":(?P<Source>.+?),"\w*":(?P<Timestamp>.+?)}'
+# timestamp_layout = "Epoch"
 
-    [bosh-alert-decoder.message_fields]
-    Type = "BoshAlert"
-    Env = "%Env%"
-    Title = "%Title%"
-    Summary = "%Summary%"
-    Tstamp = "%Timestamp%"
+#    [bosh-alert-decoder.message_fields]
+#    Type = "BoshAlert"
+#    Env = "%Env%"
+#    Title = "%Title%"
+#    Summary = "%Summary%"
+#    Tstamp = "%Timestamp%"
 
 # decode incoming metrics from cf collector input.  Send to multi decoder so we can grab the metric as a double vs a char
 [cf-collector-graphite-decoder]
@@ -84,7 +84,7 @@ timestamp_layout = "Epoch"
     Payload = "%Payload%"
     Metric = "%Metric%"
 
-# decode incoming metrics from bosh healthmanager input.  send to multi decoder so we can grab the metric as a double vs a char 
+# decode incoming metrics from bosh healthmanager input.  send to multi decoder so we can grab the metric as a double vs a char
 [bosh-hm-graphite-decoder]
 type = "MultiDecoder"
 subs = ['bosh-hm-regex', 'StatsToFieldsDecoder']
@@ -127,7 +127,7 @@ message_matcher = 'Type == "BoshAlert"'
 filename = "lua_filters/bosh_alert_slack.lua"
 can_exit = true
 preserve_data = false
- 
+
 # filter which takes incoming bosh alerts from bosh health monitor consul plugin input and executes a call to sbxmgr to load/unload alerts
 #[bosh-alert-sbxmgr-filter]
 #type = "SandboxFilter"
@@ -158,7 +158,7 @@ ticker_interval = 120
 
 # Alert for CF job health. Specfic per cf enviornment so that alert throttles are enviornment specific
 # Put the following in a file and load/unload via the hekasbxmgr tool using the following commands:
-# heka-sbmgr -action=load -config=CloudOps.toml -script=/usr/share/heka/lua_filters/health_alert_np.lua -scriptconfig=np_health.toml 
+# heka-sbmgr -action=load -config=CloudOps.toml -script=/usr/share/heka/lua_filters/health_alert_np.lua -scriptconfig=np_health.toml
 # heka-sbmgr -action=unload -config=CloudOps.toml -filtername=CFHealth_NP
 # update the "cf-np" string to match the deployment name of your cloud foundry enviornment
 [CFHealth_NP]
@@ -170,7 +170,7 @@ preserve_data = false
 
 # Alert for CF job health. Specfic per cf enviornment so that alert throttles are enviornment specific
 # Put the following in a file and load/unload via the hekasbxmgr tool using the following commands:
-# heka-sbmgr -action=load -config=CloudOps.toml -script=/usr/share/heka/lua_filters/health_alert_prd.lua -scriptconfig=prd_health.toml 
+# heka-sbmgr -action=load -config=CloudOps.toml -script=/usr/share/heka/lua_filters/health_alert_prd.lua -scriptconfig=prd_health.toml
 # heka-sbmgr -action=unload -config=CloudOps.toml -filtername=CFHealth_Prd
 # update the "cf-prd" string to match the deployment name of your cloud foundry enviornment
 [CFHealth_Prd]
@@ -243,10 +243,11 @@ append_newlines = false
 
 ############### Outputs ######################
 # Log output useful for debugging
-#[LogOutput]
-#message_matcher = "TRUE"
-#message_matcher = 'Logger == "SlackOutput" || Logger == "influxdb-output-cf-cnb" || Logger == "bosh-alert-filter" || Fields[payload_name] == "slack-message"' 
-#encoder = "RstEncoder"
+# [LogOutput]
+# message_matcher = "TRUE"
+# message_matcher = 'Logger == "SlackOutput" || Logger == "influxdb-output-cf-cnb" || Logger == "bosh-alert-filter" || Fields[payload_name] == "slack-message"'
+# encoder = "RstEncoder"
+
 
 # Sends slack messages from the the slack encoder to the specified slack channel
 # change the address to the webhook you've setup for your slack account
@@ -324,6 +325,4 @@ base_dir = "/var/cache/hekad"
 maxprocs = 8
 poolsize = 200
 max_process_inject = 1
-plugin_chansize = 50 
-
-
+plugin_chansize = 500
