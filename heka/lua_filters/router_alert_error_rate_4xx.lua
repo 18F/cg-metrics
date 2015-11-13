@@ -39,7 +39,7 @@ function timer_event(ns)
        if dashboard_ending[alert_details.env] ~= nil then
            url = string.format("%s/dashboard/db/routing-%s",url, dashboard_ending[alert_details.env])
        end
-       local out_message = string.format("<!channel>\n%s's router experiencing high percentage (%.2f %%) of 4xx responses.\nRouter IP: %s\n <%s|Grafana Router Stats>", alert_details.env, alert_details.rate, alert_details.ip, url)
+       local out_message = string.format("%s's router experiencing high percentage (%.2f %%) of 4xx responses.\nRouter IP: %s\n <%s|Grafana Router Stats>", alert_details.env, alert_details.rate, alert_details.ip, url)
        alert.set_throttle(9e11)
        alert.send(ns, out_message)
        table.remove(alert_stack,1)
