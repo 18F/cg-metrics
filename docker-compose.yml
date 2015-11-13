@@ -19,6 +19,10 @@ heka:
   - influxdb
 grafana:
   build: ./grafana
+  volumes:
+  - ~/grafana/log:/var/log/grafana
+  - ~/grafana/lib:/var/lib/grafana
+  - ~/grafana/data:/usr/share/grafana/data
   ports:
   - "3000:3000"
   links: 
